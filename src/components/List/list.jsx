@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { dataActions, controlsActions } from '../../store/actions'
 import { Preview, Table } from '..'
+import { filterList, sortList } from '../../utils/util'
 import styled from 'styled-components'
 import './list.css'
 
@@ -16,28 +17,12 @@ export const List = () => {
             //     .then(res => res.json())
             //     .then(json => console.log(json))
             const json = require('../../assets/data.json')
-            console.log(json)
-
-            const comparator = (a, b) => {
-                switch(controls.sortControls.by) {
-                    case 'id':
-                        return a.id - b.id
-                    case 'name':
-                        if (a.name === b.name)
-                            return 0
-                        else
-                            return a.name > b.name ? 1 : -1
-                    case 'age':
-                        return a.age - b.age
-                    default:
-                }
-            }
-
-            json.sort((a, b) => controls.sortControls.ascendence === 'ascend' ? comparator(a, b) : -comparator(a, b))
-            dispatch(dataActions.setData(json))
+            sortList(json, controls)
+            const data = filterList(json, controls.filter)
+            dispatch(dataActions.setData(data))
         }
         getData()
-    }, [controls.sortControls])
+    }, [controls])
 
     const ToggleBy = styled.div`
         display: flex;
@@ -99,8 +84,20 @@ export const List = () => {
                             value = "preview">Превью</ToggleView>
                     </div>
                 </div>
+                <div className = "search">
+                    <p>Поиск</p>
+                    <form>
+                        <input
+                            name = "filter"
+                            className = "search-input"
+                            value = { controls.filter }
+                            onChange = { (e) => dispatch(controlsActions.setFilter(e.target.value)) }/>
+                    </form>
+                </div>
             </div>
-            { controls.modeControls.isTable ? <Table /> : <Preview /> }
+            <div className = "content">
+                { controls.modeControls.mode === 'table' ? <Table /> : <Preview /> }
+            </div>
         </div>
     )
 }

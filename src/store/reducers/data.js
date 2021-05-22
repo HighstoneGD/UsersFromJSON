@@ -1,12 +1,14 @@
 import { actionTypes } from '../actions'
 
-const initialState = {}
+const initialState = {
+    users: []
+}
 
 export const dataReducer = (state = initialState, action) => {
     switch(action.type) {
         case actionTypes.SET_DATA:
             return {
-                ...action.payload.data
+                users: [...action.payload.data]
             }
         default: return state
     }

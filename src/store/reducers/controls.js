@@ -1,7 +1,7 @@
 import { actionTypes } from '../actions'
 
 const initialState = {
-    input: null,
+    filter: '',
     sortControls: { by: 'id', ascendence: 'ascend' },
     modeControls: { mode: 'table' }
 }
@@ -31,6 +31,11 @@ export const controlsReducer = (state = initialState, action) => {
                     ...state.modeControls,
                     mode: action.payload.mode
                 }
+            }
+        case actionTypes.SET_FILTER:
+            return {
+                ...state,
+                filter: action.payload.filter
             }
         default: return state
     }
