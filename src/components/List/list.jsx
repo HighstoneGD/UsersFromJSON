@@ -6,6 +6,7 @@ import { filterList, sortList } from '../../utils/util'
 import styled from 'styled-components'
 import './list.css'
 import { useLocation, useHistory } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export const List = () => {
     const dispatch = useDispatch()
@@ -17,21 +18,29 @@ export const List = () => {
     const query = new URLSearchParams(location.search)
     const history = useHistory()
 
+    const [t, i18n] = useTranslation()
+
     useEffect(() => {
-        if (query.entries) {
-            console.log(query.get('by'))
-            dispatch(controlsActions.setSortBy(query.get('by')))
-            dispatch(controlsActions.setSortAscendence(query.get('ascendence')))
-            dispatch(controlsActions.setMode(query.get('mode')))
-        }
+        query.get('by') ? 
+            dispatch(controlsActions.setSortBy(query.get('by'))) : 
+            setQueryParam('by', 'id')
+        query.get('ascendence') ? 
+            dispatch(controlsActions.setSortAscendence(query.get('ascendence'))) : 
+            setQueryParam('ascendence', 'ascend')
+
+        query.get('mode') ? 
+            dispatch(controlsActions.setMode(query.get('mode'))) :
+            setQueryParam('mode', 'table')
     }, [location])
 
     useEffect(() => {
         async function getData() {
-            // fetch("assets/data.json")
-            //     .then(res => res.json())
-            //     .then(json => console.log(json))
-            const list = data.data || require('../../assets/data.json')
+            const list = data.data || await (await fetch('data.json', {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                }
+            })).json()
             sortList(list, controls)
             const filteredList = filterList(list, controls.filter)
             dispatch(dataActions.setData(filteredList))
@@ -74,40 +83,40 @@ export const List = () => {
         <div className = "list-wrapper">
             <div className = "controls-wrapper">
                 <div className = "sort-wrapper">
-                    <p className = "title">Сортировка</p>
+                    <p className = "title">{ t("sort") }</p>
                     <div className = "sort-by">
                         <ToggleBy 
                             onClick = { () => setQueryParam('by', 'id') } 
                             value = "id">ID</ToggleBy>
                         <ToggleBy 
                             onClick = { () => setQueryParam('by', 'name') } 
-                            value = "name">Имя</ToggleBy>
+                            value = "name">{ t("name") }</ToggleBy>
                         <ToggleBy 
                             onClick = { () => setQueryParam('by', 'age') } 
-                            value = "age">Возраст</ToggleBy>
+                            value = "age">{ t("age") }</ToggleBy>
                     </div>
                     <div className = "sort-ascendence">
                         <ToggleAscendence 
                             onClick = { () => setQueryParam('ascendence', 'ascend') } 
-                            value = "ascend">По возрастанию</ToggleAscendence>
+                            value = "ascend">{ t("ascend") }</ToggleAscendence>
                         <ToggleAscendence 
                             onClick = { () => setQueryParam('ascendence', 'descend') } 
-                            value = "descend">По убыванию</ToggleAscendence>
+                            value = "descend">{ t("descend") }</ToggleAscendence>
                     </div>
                 </div>
                 <div className = "mode-wrapper">
-                    <p className = "title">Вид</p>
+                    <p className = "title">{ t("mode") }</p>
                     <div className = "mode">
                         <ToggleView 
                             onClick = { () => setQueryParam('mode', 'table') } 
-                            value = "table">Таблица</ToggleView>
+                            value = "table">{ t('table') }</ToggleView>
                         <ToggleView 
                             onClick = { () => setQueryParam('mode', 'preview') } 
-                            value = "preview">Превью</ToggleView>
+                            value = "preview">{ t("preview") }</ToggleView>
                     </div>
                 </div>
                 <div className = "search">
-                    <p>Поиск</p>
+                    <p>{ t("search") }</p>
                     <form>
                         <input
                             name = "filter"

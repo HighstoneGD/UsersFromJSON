@@ -3,10 +3,13 @@ import { useSelector, useDispatch } from 'react-redux'
 import { dataActions } from '../../store/actions'
 import styled from 'styled-components'
 import './preview.css'
+import { useTranslation } from 'react-i18next'
 
 export const Preview = () => {
     const dispatch = useDispatch()
     const data = useSelector(state => state.data.users)
+
+    const [t, i18n] = useTranslation()
 
     const UserWrapper = styled.div`
         width: ${ props => props.hasVideo ? '100%' : '50%' };
@@ -27,7 +30,7 @@ export const Preview = () => {
         const hasVideo = !!user?.video
         
         return (
-            <UserWrapper hasVideo = { hasVideo }>
+            <UserWrapper hasVideo = { hasVideo } key = { user.id }>
                 <div className = "preview-user-wrapper">
                     <Profile hasVideo = { hasVideo }>
                         <div className = "preview-head">
@@ -39,7 +42,7 @@ export const Preview = () => {
                                 className = { `star ${ user.favourite ? 'favourite' : '' }` }
                                 onClick = { () => dispatch(dataActions.toggleFavourite(user.id)) }>★</p>
                         </div>        
-                        <p>{ user.age } лет</p>
+                        <p>{ user.age } { t("years") }</p>
                         <p>{ user.phone }</p>
                         <p>{ user.phrase }</p>
                     </Profile>

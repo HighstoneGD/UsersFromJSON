@@ -1,0 +1,15 @@
+{
+    "title": "ui",
+    "description": {
+        "sort": "Sort by",
+        "name": "Name",
+        "age": "Age",
+        "ascend": "Ascending",
+        "descend": "Descending",
+        "mode": "Mode",
+        "table": "Table",
+        "preview": "Preview",
+        "search": "Search",
+        "years": "years"
+    }
+}
