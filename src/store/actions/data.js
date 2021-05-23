@@ -6,3 +6,10 @@ export const setData = (data) => {
         payload: { data }
     }
 }
+
+export const toggleFavourite = (id) => {
+    return {
+        type: actionTypes.TOGGLE_FAVOURITE,
+        payload: { id }
+    }
+}

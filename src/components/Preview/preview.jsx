@@ -1,9 +1,11 @@
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { dataActions } from '../../store/actions'
 import styled from 'styled-components'
 import './preview.css'
 
 export const Preview = () => {
+    const dispatch = useDispatch()
     const data = useSelector(state => state.data.users)
 
     const UserWrapper = styled.div`
@@ -33,7 +35,9 @@ export const Preview = () => {
                                 <img className = "preview-user-image" src = { require(`../../assets/images/${ user.image }.svg`).default } alt = ""/>
                                 <p className = "user-name">{ user.name }</p>
                             </div>
-                            <p className = { `star ${ user.favourite ? 'favourite' : '' }` }>★</p>
+                            <p 
+                                className = { `star ${ user.favourite ? 'favourite' : '' }` }
+                                onClick = { () => dispatch(dataActions.toggleFavourite(user.id)) }>★</p>
                         </div>        
                         <p>{ user.age } лет</p>
                         <p>{ user.phone }</p>

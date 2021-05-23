@@ -5,24 +5,46 @@ import { Preview, Table } from '..'
 import { filterList, sortList } from '../../utils/util'
 import styled from 'styled-components'
 import './list.css'
+import { useLocation, useHistory } from 'react-router-dom'
 
 export const List = () => {
     const dispatch = useDispatch()
 
     const controls = useSelector(state => state.controls)
+    const data = useSelector(state => state.data)
+
+    const location = useLocation()
+    const query = new URLSearchParams(location.search)
+    const history = useHistory()
+
+    useEffect(() => {
+        if (query.entries) {
+            console.log(query.get('by'))
+            dispatch(controlsActions.setSortBy(query.get('by')))
+            dispatch(controlsActions.setSortAscendence(query.get('ascendence')))
+            dispatch(controlsActions.setMode(query.get('mode')))
+        }
+    }, [location])
 
     useEffect(() => {
         async function getData() {
             // fetch("assets/data.json")
             //     .then(res => res.json())
             //     .then(json => console.log(json))
-            const json = require('../../assets/data.json')
-            sortList(json, controls)
-            const data = filterList(json, controls.filter)
-            dispatch(dataActions.setData(data))
+            const list = data.data || require('../../assets/data.json')
+            sortList(list, controls)
+            const filteredList = filterList(list, controls.filter)
+            dispatch(dataActions.setData(filteredList))
         }
         getData()
     }, [controls])
+
+    const setQueryParam = (param, value) => {
+        query.set(param, value)
+        history.push({
+            search: '?' + query.toString()
+        })
+    }
 
     const ToggleBy = styled.div`
         display: flex;
@@ -55,21 +77,21 @@ export const List = () => {
                     <p className = "title">Сортировка</p>
                     <div className = "sort-by">
                         <ToggleBy 
-                            onClick = { () => dispatch(controlsActions.setSortBy('id')) } 
+                            onClick = { () => setQueryParam('by', 'id') } 
                             value = "id">ID</ToggleBy>
                         <ToggleBy 
-                            onClick = { () => dispatch(controlsActions.setSortBy('name')) } 
+                            onClick = { () => setQueryParam('by', 'name') } 
                             value = "name">Имя</ToggleBy>
                         <ToggleBy 
-                            onClick = { () => dispatch(controlsActions.setSortBy('age')) } 
+                            onClick = { () => setQueryParam('by', 'age') } 
                             value = "age">Возраст</ToggleBy>
                     </div>
                     <div className = "sort-ascendence">
                         <ToggleAscendence 
-                            onClick = { () => dispatch(controlsActions.setSortAscendence('ascend')) } 
+                            onClick = { () => setQueryParam('ascendence', 'ascend') } 
                             value = "ascend">По возрастанию</ToggleAscendence>
                         <ToggleAscendence 
-                            onClick = { () => dispatch(controlsActions.setSortAscendence('descend')) } 
+                            onClick = { () => setQueryParam('ascendence', 'descend') } 
                             value = "descend">По убыванию</ToggleAscendence>
                     </div>
                 </div>
@@ -77,10 +99,10 @@ export const List = () => {
                     <p className = "title">Вид</p>
                     <div className = "mode">
                         <ToggleView 
-                            onClick = { () => dispatch(controlsActions.setMode('table')) } 
+                            onClick = { () => setQueryParam('mode', 'table') } 
                             value = "table">Таблица</ToggleView>
                         <ToggleView 
-                            onClick = { () => dispatch(controlsActions.setMode('preview')) } 
+                            onClick = { () => setQueryParam('mode', 'preview') } 
                             value = "preview">Превью</ToggleView>
                     </div>
                 </div>
